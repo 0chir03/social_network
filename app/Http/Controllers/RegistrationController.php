@@ -6,7 +6,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
-class RegistrationController extends Controller
+class RegistrationController
 {
     //Показать форму регистрации
     public function showRegistrationForm()
@@ -26,7 +26,7 @@ class RegistrationController extends Controller
         ]);
 
         //Создаем пользователя
-        $user = (new \App\Models\User())->create([
+        $user = User::query()->create([
             'name' => $validated['name'],
             'email' => $validated['email'],
             'password' => Hash::make($validated['password']),

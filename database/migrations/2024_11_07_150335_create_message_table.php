@@ -12,12 +12,13 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('messages', function (Blueprint $table) {
-            $table->integer('id')->primary();
+            $table->id();
             $table->integer('subscriber_id');
             $table->foreign('subscriber_id')->references('id')->on('subscribers');
             $table->integer('user_id');
             $table->dateTime('date_time');
             $table->text('text')->nullable();
+            $table->timestamps();
         });
     }
 

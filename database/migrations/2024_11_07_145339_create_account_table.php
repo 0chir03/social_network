@@ -12,18 +12,17 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('accounts', function (Blueprint $table) {
-            $table->integer('id')->primary();
+            $table->id();
             $table->integer('user_id');
             $table->foreign('user_id')->references('id')->on('users');
             $table->string('first_name');
             $table->string('last_name');
             $table->date('date_of_birth');
-            $table->string('email')->unique();
             $table->enum('marital_status', ['холост', 'женат', 'не замужем', 'замужем', 'в активном поиске', 'есть парень', 'есть девушка'])->nullable();
             $table->string('locality');
             $table->string('career');
             $table->string('hobby');
-            $table->string('photo_link');
+            $table->timestamps();
         });
     }
 
