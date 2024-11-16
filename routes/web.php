@@ -21,8 +21,11 @@ Route::post('/account', [AccountController::class, 'account'])->middleware('auth
 Route::get('/page', [PageController::class, 'showPage'])->name('page')->middleware('auth');
 Route::get('/members', [MemberController::class, 'showMembers'])->name('members')->middleware('auth');
 Route::get('/members/{id}/profile', [MemberController::class, 'showMemberPage'])->name('profile')->middleware('auth');
+Route::get('/members/{id}/friends_member', [MemberController::class, 'showFriendsMember'])->name('friends_member')->middleware('auth');
 Route::post('/members', [MemberController::class, 'addMembers'])->middleware('auth');
 Route::get('/subscribers', [SubscriberController::class, 'showSubscribers'])->name('subscribers')->middleware('auth');
+Route::post('/subscribers', [SubscriberController::class, 'accept'])->middleware('auth');
+
 
 
 Route::get('/', function () {

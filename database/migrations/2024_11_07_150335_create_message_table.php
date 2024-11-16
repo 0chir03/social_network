@@ -16,7 +16,6 @@ return new class extends Migration
             $table->integer('subscriber_id');
             $table->foreign('subscriber_id')->references('id')->on('subscribers');
             $table->integer('user_id');
-            $table->dateTime('date_time');
             $table->text('text')->nullable();
             $table->timestamps();
         });

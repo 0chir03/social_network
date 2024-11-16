@@ -10,10 +10,11 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 class Subscriber extends Authenticatable
 {
     use HasFactory;
-    protected $fillable = ['user_id', 'account_id',];
+    protected $fillable = ['user_id', 'account_id', 'accepted'];
 
     public function account(): BelongsTo
     {
         return $this->belongsTo(Account::class);
+
     }
 }

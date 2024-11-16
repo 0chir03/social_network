@@ -18,9 +18,9 @@
 </header>
 <body>
     <main>
-        @if (session('success'))
+        @if (session('status'))
             <div class="alert alert-success">
-                {{ session('success') }}
+                {{ session('status') }}
             </div>
         @endif
         <div class="profiles">
@@ -28,7 +28,7 @@
                 <div class="members">
                     <div class="images">
                         <div  class="circle-image-members">
-                            <a href="{{route('profile', $id)}}"> <img src="{{Storage::disk('images')->url($account->photo->photo_link)}}"></a> alt="Фотография участника" width="50">
+                            <a href="{{route('profile', $account)}}"> <img src="{{Storage::disk('images')->url($account->photo->photo_link)}}"></a> alt="Фотография участника" width="50">
                         </div>
                         {{$account->first_name . ' ' . $account->last_name}} <br/>
                             {{$account->locality}}<br/>

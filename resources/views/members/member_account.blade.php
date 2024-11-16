@@ -30,7 +30,7 @@
             <p>Хобби: {{$account->hobby}}</p>
         </div>
         <a href="{{route('members')}}">Участники сообщества</a><br><br>
-        <a href="{{route('subscribers')}}">Друзья и подписчики</a>
+        <a href="{{route('friends_member', $account)}}">Друзья и подписчики</a>
     </div>
 </div>
 <div class="message">
@@ -65,8 +65,8 @@
         display: inline-block;
         border-radius: 50%;
         overflow: hidden;
-        width: 200px;
-        height: 200px;
+        width: 190px;
+        height: 190px;
     }
     .circle-image img{
         width:100%;

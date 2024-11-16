@@ -20,42 +20,53 @@
 <main>
     <div class="profiles">
         <p>Ваши друзья</p>
-        @foreach($subscribers as $subscriber)
-            <div class="members">
-                <div class="images">
-                    <div  class="circle-image-members">
-                        <img src="{{Storage::disk('images')->url($subscriber->account->photo->photo_link)}}" alt="Фотография участника" width="50">--}}
+            @foreach($subscribers as $subscriber)
+                @if($subscriber->accepted === true)
+                    <div class="members">
+                        <div class="images">
+                            <div  class="circle-image-members">
+                                 <img src="{{Storage::disk('images')->url($subscriber->account->photo->photo_link)}}" alt="Фотография участника" width="50">--}}
+                                     </div>
+                                            {{$subscriber->account->first_name . ' ' . $subscriber->account->last_name}}<br/>
+                                                 {{$subscriber->account->locality}}<br/>
+                                                    <form action="{{route('members')}}" method="POST">
+                                                @csrf
+                                            <input hidden="id" name="id" value="{{$subscriber->account->id}}" required>
+                                        <div class="item" ><button>Написать</button></div>
+                                    </form>
+                                </div>
+                            </div>
+                        @endif
+                    @endforeach
+                 </div>
+            <div class="profiles">
+                @if (session('status'))
+                    <div class="alert alert-success">
+                        {{ session('status') }}
                     </div>
-                    {{$subscriber->account->first_name . ' ' . $subscriber->account->last_name}}<br/>
-                    {{$subscriber->account->locality}}<br/>
-                    <form action="{{route('members')}}" method="POST">
-                        @csrf
-                        <input hidden="id" name="id" value="{{$subscriber->account->id}}" required>
-                        <div class="item" ><button>Написать</button></div>
-                    </form>
-                </div>
-            </div>
-        @endforeach
-    </div>
-    <div class="profiles">
-        <p>Ваши подписчики</p>
-        @foreach($subscribers as $subscriber)
-            <div class="members">
-                <div class="images">
-                    <div  class="circle-image-members">
-                        <img src="{{Storage::disk('images')->url($subscriber->account->photo->photo_link)}}" alt="Фотография участника" width="50">--}}
-                    </div>
-                    {{$subscriber->account->first_name . ' ' . $subscriber->account->last_name}}<br/>
-                    {{$subscriber->account->locality}}<br/>
-                    <form action="{{route('members')}}" method="POST">
-                        @csrf
-                        <input hidden="id" name="id" value="{{$subscriber->account->id}}" required>
-                        <div class="item" ><button>Написать</button></div>
-                    </form>
-                </div>
-            </div>
-        @endforeach
-    </div>
+                @endif
+              <p>Запросы в друзья</p>
+                @foreach($usersObjRequest as $userObjRequest)
+                     @foreach($userObjRequest as $item)
+                        @if(!empty($item) AND $item->accepted === false)
+                                <div class="members">
+                                    <div class="images">
+                                        <div  class="circle-image-members">
+                                            <img src="{{Storage::disk('images')->url($item->photo_link)}}" alt="Фотография участника" width="50">--}}
+                                                </div>
+                                                    {{$item->first_name . ' ' . $item->last_name}}<br/>
+                                                    {{$item->locality}}<br/>
+                                                    <form action="{{route('subscribers')}}" method="POST">
+                                                @csrf
+                                            <input hidden="user_id" name="user_id" value="{{$item->user_id}}" required>
+                                        <div class="item" ><button>Принять запрос в друзья</button></div>
+                                    </form>
+                                </div>
+                            </div>
+                        @endif
+                    @endforeach
+                @endforeach
+        </div>
 </main>
 </body>
 <style>
