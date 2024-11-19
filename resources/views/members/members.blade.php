@@ -8,7 +8,13 @@
 </head>
 <header class="header">
     <h1>МОСТ
-        <section>
+        <section  style="margin-left: 5px; float:left" >
+            <form  action="{{ route('my_page') }}" method="POST">
+                @csrf
+                <button>Моя страница</button>
+            </form>
+        </section>
+        <section style = "margin-right: 5px; float: right">
             <form  action="{{ route('logout') }}" method="POST">
                 @csrf
                 <button>Выйти</button>
@@ -30,26 +36,22 @@
                         <div  class="circle-image-members">
                             <a href="{{route('profile', $account)}}"> <img src="{{Storage::disk('images')->url($account->photo->photo_link)}}"></a> alt="Фотография участника" width="50">
                         </div>
-                        {{$account->first_name . ' ' . $account->last_name}} <br/>
-                            {{$account->locality}}<br/>
-                            <div class="item" style="display: inline-block">
-                                <form action="{{route('members')}}" method="POST">
-                                    @csrf
-                                    <input hidden="id" name="id" value= {{$account->id}} required>
-                                    <button>Добавить</button>
-                                </form>
-                            </div>
-                        <form action="{{route('members')}}" method="POST">
-                            @csrf
-                            <input hidden="id" name="id" value="{{$account->id}}" required>
-                            <div class="item" ><button>Написать</button></div>
-                        </form>
-                    </div>
-                </div>
-            @endforeach
-        </div>
+                             {{$account->first_name . ' ' . $account->last_name}} <br/>
+                                  {{$account->locality}}<br/>
+                                      <div class="item" style="display: inline-block">
+                                           <form action="{{route('members')}}" method="POST">
+                                          @csrf
+                                          <input hidden="id" name="id" value= {{$account->id}} required>
+                                       <button>Добавить</button>
+                                    </form>
+                                 </div>
+                             </div>
+                       </div>
+                   @endforeach
+              </div>
         <footer> {{$accounts->links()}} </footer>
     </main>
+<div style="text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); position: fixed; bottom: 0; right: 0; z-index:500;"> {{$date = date('d.m.Y')}}</div>
 </body>
 <style>
     body {
@@ -65,10 +67,6 @@
         color: #ffffff;
         padding: 2px 0;
         text-align: center;
-    }
-    section {
-        margin-right: 5px;
-        float: right;
     }
 
     nav ul {
@@ -123,7 +121,7 @@
 
     .images {
         display: grid;
-        grid-template-columns: repeat(4,1fr);
+        grid-template-columns: repeat(3,1fr);
         text-align: center;
         vertical-align: middle;
         position: relative;

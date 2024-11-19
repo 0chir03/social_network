@@ -39,7 +39,6 @@ class LoginController
         return back()->withErrors(['email' => "Неверный email или пароль.",])->onlyInput('email');
     }
 
-
     //Обработка выхода
     public  function logout(Request $request)
     {

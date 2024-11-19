@@ -17,7 +17,7 @@
     </h1>
 </header>
 <body>
-    <div style="display: flex;">
+<main>
         <div class="profile" >
                 <span class="circle-image">
                     <img src="{{Storage::disk('images')->url($account->photo->photo_link)}}" alt="Фотография пользователя" width="300">
@@ -30,15 +30,30 @@
                     <p>Хобби: {{$user->account->hobby}}</p>
                 </div>
                 <a href="{{route('members')}}">Участники сообщества</a><br><br>
-                <a href="{{route('subscribers')}}">Друзья</a>
+                <a href="{{route('subscribers')}}">Друзья</a><br><br>
+                <a href="{{route('messages')}}">Сообщения</a><br><br>
+
             </div>
          </div>
-    <div class="message">
-        <h2>Отправить сообщение</h2>
-        <textarea placeholder="Напишите сообщение..." rows="3"></textarea>
-        <button type="button">Отправить</button>
-    </div>
-</div>
+        <div class="message">
+            @foreach($posts as $post)
+                <div class="text-overlay" style="color: black; font-weight: 600">{{$post->body}}</div> <h7>{{$post->created_at}}</h7>
+                <p></p>
+            @endforeach
+                <form action="{{route('posts')}}" method="POST">
+                @csrf
+                <h2>Запись на стене</h2>
+                     <textarea name="status" class="form-control{{$errors->has('status') ? ' is-invalid' : ''}}" placeholder="Что нового..." rows="3"></textarea>
+                    @if($errors->has('status'))
+                        <div class="invalid-feedback">
+                            {{$errors->first('status')}}
+                        </div>
+                    @endif
+                <button type="submit"> Отправить </button>
+            </form>
+        </div>
+    <div style="text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); position: fixed; bottom: 0; right: 0; z-index:500;"> {{$date = date('d.m.Y')}}</div>
+</main>
 </body>
 </html>
 
@@ -49,6 +64,7 @@
     padding: 0;
     background-color: #f4f4f4;
     }
+
 
     header {
     background: #35424a;
@@ -93,7 +109,6 @@
 
     main {
     display: flex;
-    justify-content: space-around;
     padding: 20px;
     }
 
@@ -103,7 +118,7 @@
     }
 
     .message {
-        width: 50%;
+        width: 40%;
         padding: 5px;
     }
 
@@ -113,7 +128,7 @@
     margin: 10px 0;
     border-radius: 5px;
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(1, 1fr);
     }
 
     .images {

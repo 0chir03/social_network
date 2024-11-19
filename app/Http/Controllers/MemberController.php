@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Events\SubscriberEvent;
 use App\Models\Account;
 use App\Models\User;
 use App\Models\Subscriber;
@@ -32,7 +31,7 @@ class MemberController
     public function showFriendsMember($id)
     {
         $userId = Account::query()->find($id)->user_id;
-        $subscribers = Subscriber::query()->where('user_id', $userId)->get();
+        $subscribers = Subscriber::query()->where('user_id', $userId)->paginate(5);
         return view('subscribers.subscribers')->with('subscribers', $subscribers);
     }
 

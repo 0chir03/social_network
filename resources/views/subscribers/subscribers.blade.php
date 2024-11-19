@@ -8,7 +8,13 @@
 </head>
 <header class="header">
     <h1>МОСТ
-        <section>
+        <section  style="margin-left: 5px; float:left" >
+            <form  action="{{ route('my_page') }}" method="POST">
+                @csrf
+                <button>Моя страница</button>
+            </form>
+        </section>
+        <section style = "margin-right: 5px; float: right">
             <form  action="{{ route('logout') }}" method="POST">
                 @csrf
                 <button>Выйти</button>
@@ -17,6 +23,11 @@
     </h1>
 </header>
 <body>
+    @if (session('status'))
+        <div class="alert alert-success">
+            {{ session('status') }}
+        </div>
+    @endif
 <main>
     <div class="profiles">
         <p>Ваши друзья</p>
@@ -25,49 +36,53 @@
                     <div class="members">
                         <div class="images">
                             <div  class="circle-image-members">
-                                 <img src="{{Storage::disk('images')->url($subscriber->account->photo->photo_link)}}" alt="Фотография участника" width="50">--}}
+                                <a href="{{route('profile', $subscriber->account)}}"> <img src="{{Storage::disk('images')->url($subscriber->account->photo->photo_link)}}"> </a> alt="Фотография участника" width="50">
                                      </div>
                                             {{$subscriber->account->first_name . ' ' . $subscriber->account->last_name}}<br/>
                                                  {{$subscriber->account->locality}}<br/>
-                                                    <form action="{{route('members')}}" method="POST">
-                                                @csrf
-                                            <input hidden="id" name="id" value="{{$subscriber->account->id}}" required>
-                                        <div class="item" ><button>Написать</button></div>
+                                                    <form action="{{route('send')}}" method="POST">
+                                                       @csrf
+                                                <input hidden="id" name="id" value="{{$subscriber->account->user_id }}   " required>
+                                            <textarea name="content" class="form-control" placeholder="Напишите сообщение другу..." rows="3"></textarea>
+                                        <div class="item"><button>Написать</button></div>
                                     </form>
                                 </div>
                             </div>
                         @endif
                     @endforeach
                  </div>
-            <div class="profiles">
+            <div class="profiles" >
                 @if (session('status'))
                     <div class="alert alert-success">
                         {{ session('status') }}
                     </div>
                 @endif
               <p>Запросы в друзья</p>
-                @foreach($usersObjRequest as $userObjRequest)
-                     @foreach($userObjRequest as $item)
-                        @if(!empty($item) AND $item->accepted === false)
-                                <div class="members">
-                                    <div class="images">
-                                        <div  class="circle-image-members">
-                                            <img src="{{Storage::disk('images')->url($item->photo_link)}}" alt="Фотография участника" width="50">--}}
-                                                </div>
-                                                    {{$item->first_name . ' ' . $item->last_name}}<br/>
-                                                    {{$item->locality}}<br/>
-                                                    <form action="{{route('subscribers')}}" method="POST">
-                                                @csrf
-                                            <input hidden="user_id" name="user_id" value="{{$item->user_id}}" required>
-                                        <div class="item" ><button>Принять запрос в друзья</button></div>
-                                    </form>
+                 @if(isset($usersObjRequest) === true)
+                    @foreach($usersObjRequest as $userObjRequest)
+                         @foreach($userObjRequest as $item)
+                            @if(!empty($item) AND $item->accepted === false)
+                                    <div class="members">
+                                        <div class="images">
+                                            <div  class="circle-image-members">
+                                                <img src="{{Storage::disk('images')->url($item->photo_link)}}" alt="Фотография участника" width="50">--}}
+                                                    </div>
+                                                        {{$item->first_name . ' ' . $item->last_name}}<br/>
+                                                        {{$item->locality}}<br/>
+                                                        <form action="{{route('subscribers')}}" method="POST">
+                                                    @csrf
+                                                <input hidden="user_id" name="user_id" value="{{$item->user_id}}" required>
+                                            <div class="item" ><button>Принять запрос в друзья</button></div>
+                                        </form>
+                                    </div>
                                 </div>
-                            </div>
-                        @endif
+                            @endif
+                        @endforeach
                     @endforeach
-                @endforeach
-        </div>
+                 @endif
+            </div>
 </main>
+<div style="text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); position: fixed; bottom: 0; right: 0; z-index:500;"> {{$date = date('d.m.Y')}}</div>
 </body>
 <style>
     body {
@@ -83,10 +98,6 @@
         color: #ffffff;
         padding: 2px 0;
         text-align: center;
-    }
-    section {
-        margin-right: 5px;
-        float: right;
     }
 
     nav ul {
@@ -115,6 +126,7 @@
         padding: 10px;
         width: 40%;
         border-radius: 8px;
+        margin-left: 10px;
         box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         text-align: center;
     }
@@ -143,10 +155,13 @@
 
     .images {
         display: grid;
-        grid-template-columns: repeat(4, 1fr);
+        grid-template-columns: repeat(3, 1fr);
         text-align: center;
         vertical-align: middle;
         position: relative;
+    }
+    a:hover img {
+        opacity: 0.5;
     }
 
     .pagination {
@@ -165,7 +180,7 @@
     }
 
     textarea {
-        width: 100%;
+        width: 80%;
         padding: 20px;
         border: 1px solid #ccc;
         border-radius: 4px;

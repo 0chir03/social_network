@@ -5,6 +5,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class Subscriber extends Authenticatable
@@ -14,7 +15,12 @@ class Subscriber extends Authenticatable
 
     public function account(): BelongsTo
     {
-        return $this->belongsTo(Account::class);
+        return $this->belongsTo(Account::class, 'account_id');
 
+    }
+
+    public function message(): BelongsToMany
+    {
+        return $this->belongsToMany(Message::class);
     }
 }

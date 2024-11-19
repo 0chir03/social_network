@@ -1,3 +1,2 @@
-<html>
-    <h1> Заявка принята </h1>
-</html>
+<?php
+echo "SUCCESS";

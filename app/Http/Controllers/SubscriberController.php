@@ -17,14 +17,16 @@ class SubscriberController
         //друзья пользователя
         $subscribers = Subscriber::query()->where('user_id', Auth::id())->get();
 
-        //на кого подписан и отправлены заявки(если есть)
+        //на кого подписан (по account_id авторизованного пользователя)
         $requests = Subscriber::query()->where('account_id', Auth::user()->account->id)->get();
 
+        //запросы на добавление в друзья
         $usersObjRequest = [];
         foreach($requests as $item){
             $userIdRequest = $item->user_id;
+            //IDшники аккаунтов на которых подписан
             $accountIdRequest = Account::query()->where('user_id', '=', $userIdRequest)->select('id')->get();
-
+            //данные из таблиц accounts, photos, subscribers
             $userObjRequest = Account::query()->join('subscribers', 'accounts.user_id', '=', 'subscribers.user_id')
                                               ->join('photos', 'accounts.id', '=', 'photos.account_id')
                                               ->where('accounts.user_id', '=', $userIdRequest)
@@ -46,7 +48,18 @@ class SubscriberController
             'user_id' => 'required|integer',
         ]);
 
+        //account_id заявителя по его user_id
+        $idAccount = Account::query()->where('user_id', '=', $validated['user_id'])->select('id')->get();
+
+        //изменение столбца subscribers.accepted на true (потверждение в друзья, результат виден заявителю)
         Subscriber::query()->where('user_id', $validated['user_id'])->update(['accepted' => true]);
+
+        //добавление подписчика к себе (результат виден пользователю)
+        Subscriber::query()->create([
+            'user_id' => Auth::id(),
+            'account_id' => $idAccount[0]->id,
+            'accepted' => 'true',
+            ]);
 
         return view ('success');
     }

@@ -31,9 +31,15 @@ class Account extends Authenticatable
         return $this->belongsTo(User::class);
     }
 
-    public function subscriber(): HasOne
+    public function subscriber(): HasMany
     {
-        return $this->hasOne(Subscriber::class);
+        return $this->hasMany(Subscriber::class);
     }
+
+    public function message(): HasOne
+    {
+        return $this->hasOne(Message::class);
+    }
+
 
 }
