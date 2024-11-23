@@ -17,7 +17,7 @@
                         @endphp
                         <a href="{{ route('messages.show', $otherUser) }}"
                            class="list-group-item d-flex justify-content-between align-items-center">
-                            {{ $otherUser->name }}
+                            {{ $otherUser->account->first_name}}
                             @if($unreadCount > 0)
                                 <span class="badge bg-primary rounded-pill">{{ $unreadCount }}</span>
                             @endif

@@ -32,6 +32,9 @@
                 <a href="{{route('members')}}">Участники сообщества</a><br><br>
                 <a href="{{route('subscribers')}}">Друзья</a><br><br>
                 <a href="{{route('messages')}}">Сообщения</a><br><br>
+                <a href="{{route('image')}}">Фотографии</a><br><br>
+                <a href="{{route('music')}}">Аудиозаписи</a><br><br>
+                <a href="{{route('video')}}">Видео</a><br><br>
 
             </div>
          </div>

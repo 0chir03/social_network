@@ -4,12 +4,21 @@ namespace App\Http\Controllers;
 
 
 use App\Models\Message;
+use App\Models\MessageFile;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class MessageController
 {
+
+    protected $mailController;
+
+    public function __construct(MailController $mailController)
+    {
+        $this->mailController = $mailController;
+    }
+
     public function index()
     {
 
@@ -47,40 +56,34 @@ class MessageController
         return view('messages.send_message_form', compact('messages', 'user'));
     }
 
-    //отправка сообщения со страницы друзей
-    public function send(Request $request)
-    {
-
-        $credentials = $request->validate([
-            'id' =>'required|integer',
-            'content' => 'required|max:1000'
-        ]);
-
-
-
-        Message::query()->create([
-            'sender_id' => Auth::id(),
-            'receiver_id' =>  $credentials['id'],
-            'content' => $credentials['content'],
-        ]);
-
-        return back()->with('status', "Сообщение отправлено");
-    }
-
-    //Отправка сообщений со страницы диалога
-    public function store(Request $request, User $user)
+    //Отправка сообщений
+    public function send(Request $request, User $user)
     {
         $validated = $request->validate([
-            'content' => 'required|string|max:1000'
+            'content' => 'required|string|max:1000',
+            'file' => 'sometimes|file|max:20000'
         ]);
 
-        $message = Message::create([
+        //текстовое сообщение
+        $message = Message::query()->create([
             'sender_id' => Auth::id(),
             'receiver_id' => $user->id,
             'content' => $validated['content'],
         ]);
 
-        return back()->with('success', 'Сообщение отправлено');
+        //сообщение с медиаконтентом
+        if (isset($validated['file']) === true) {
+            MessageFile::query()->create([
+                'message_id' => $message->id,
+                'file_link' => $request->file('file')->store('', 'message')
+            ]);
+        }
+        $emailSender = Auth::user()->email;
+        $emailReceiver = $user->email;
+
+        $this->mailController->basic_email($emailSender, $emailReceiver);
+
+        return back()->with('status', 'Сообщение отправлено');
     }
 
     public function getUnreadCount()

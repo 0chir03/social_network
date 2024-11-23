@@ -40,9 +40,8 @@
                                      </div>
                                             {{$subscriber->account->first_name . ' ' . $subscriber->account->last_name}}<br/>
                                                  {{$subscriber->account->locality}}<br/>
-                                                    <form action="{{route('send')}}" method="POST">
+                                                    <form action="{{route('send', $subscriber->account->user_id)}}" method="POST">
                                                        @csrf
-                                                <input hidden="id" name="id" value="{{$subscriber->account->user_id }}   " required>
                                             <textarea name="content" class="form-control" placeholder="Напишите сообщение другу..." rows="3"></textarea>
                                         <div class="item"><button>Написать</button></div>
                                     </form>

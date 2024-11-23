@@ -9,7 +9,19 @@
                     @foreach($messages as $message)
                         <div class="message {{ $message->sender_id === Auth::id() ? 'sent' : 'received' }}">
                             <div class="message-content">
-                                {{ $message->content }}
+                                {{$message->content}}
+                                <div class="message-file">
+                                @if (!empty($message->messageFile))
+
+                                        @if (str_starts_with(Storage::disk('message')->mimeType($message->messageFile->file_link), 'image/'))
+                                             <img width="320" height="240" src="{{Storage::disk('message')->url($message->messageFile->file_link)}}">
+                                        @elseif(str_starts_with(Storage::disk('message')->mimeType($message->messageFile->file_link), 'video/'))
+                                             <video width="240" height="240" controls src="{{Storage::disk('message')->url($message->messageFile->file_link)}}"></video>
+                                        @elseif (str_starts_with(Storage::disk('message')->mimeType($message->messageFile->file_link), 'audio/'))
+                                            <audio controls src="{{Storage::disk('message')->url($message->messageFile->file_link)}}"></audio>
+                                        @endif
+                                @endif
+                                </div>
                             </div>
                             <div class="message-time">
                                 {{ $message->created_at->format('H:i') }}
@@ -18,13 +30,15 @@
                     @endforeach
                 </div>
 
-                <form action="{{ route('messages.store', $user) }}" method="POST" class="mt-3">
+                <form action="{{ route('messages.store', $user) }}" enctype="multipart/form-data" method="POST" class="mt-3">
                     @csrf
                     <div class="form-group">
-                    <textarea name="content" class="form-control" rows="3"
+                    <textarea name="content" class="form-control" style="width: 100%" rows="3"
                               placeholder="Введите сообщение"></textarea>
+                    <label style="float: right" for="file">Файл<br/>
+                            <input type="file" name="file" multiple /></label><br/>
+                        <button type="submit" class="btn btn-primary mt-2">Отправить</button>
                     </div>
-                    <button type="submit" class="btn btn-primary mt-2">Отправить</button>
                 </form>
             </div>
         </div>
@@ -45,7 +59,7 @@
 
         .message {
             margin-bottom: 15px;
-            max-width: 70%;
+            max-width: 50%;
         }
 
         .message.sent {
