@@ -49,9 +49,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/messages/unread/count', [MessageController::class, 'getUnreadCount'])->name('messages.unread.count');
 });
 
-Route::get('/sendbasicemail',[MailController::class, 'basic_email'])->name('sendbasicemail');
+/*Route::get('/sendbasicemail',[MailController::class, 'basic_email'])->name('sendbasicemail');
 Route::get('/sendhtmlemail',[MailController::class, 'html_email'])->name('sendhtmlemail');
-Route::get('/sendattachmentemail',[MailController::class, 'attachment_email'])->name('sendattachmentemail');
+Route::get('/sendattachmentemail',[MailController::class, 'attachment_email'])->name('sendattachmentemail');*/
 
 
 Route::get('/', function () {

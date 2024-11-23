@@ -3,21 +3,16 @@
 namespace App\Http\Controllers;
 
 
+use App\Events\MessageEvent;
 use App\Models\Message;
 use App\Models\MessageFile;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
+
 class MessageController
 {
-
-    protected $mailController;
-
-    public function __construct(MailController $mailController)
-    {
-        $this->mailController = $mailController;
-    }
 
     public function index()
     {
@@ -78,10 +73,8 @@ class MessageController
                 'file_link' => $request->file('file')->store('', 'message')
             ]);
         }
-        $emailSender = Auth::user()->email;
-        $emailReceiver = $user->email;
 
-        $this->mailController->basic_email($emailSender, $emailReceiver);
+        event(new MessageEvent($message));
 
         return back()->with('status', 'Сообщение отправлено');
     }
