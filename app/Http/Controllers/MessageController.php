@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+require_once __DIR__ . '/../../../vendor/autoload.php';
 
 use App\Events\MessageEvent;
 use App\Models\Message;
@@ -9,6 +10,8 @@ use App\Models\MessageFile;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use PhpAmqpLib\Connection\AMQPStreamConnection;
+use PhpAmqpLib\Message\AMQPMessage;
 
 
 class MessageController
@@ -74,7 +77,13 @@ class MessageController
             ]);
         }
 
-        event(new MessageEvent($message));
+        $connection = new AMQPStreamConnection('rabbitmq', 5672, 'rmuser', 'rmpassword');
+        $channel = $connection->channel();
+
+        $channel->queue_declare('hello', false, false, false, false);
+
+        $msg = new AMQPMessage($message);
+        $channel->basic_publish($msg, '', 'hello');
 
         return back()->with('status', 'Сообщение отправлено');
     }
