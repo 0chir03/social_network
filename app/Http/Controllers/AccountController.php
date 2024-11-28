@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\AccountRequest;
 use App\Models\Account;
 use App\Models\Photo;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class AccountController
@@ -17,18 +17,10 @@ class AccountController
     }
 
     //Обработка аккаунта
-    public function account(Request $request)
+    public function account(AccountRequest $request)
     {
             //Валидация данных
-            $validated = $request->validate([
-                'firstName' => 'required|string|max:255',
-                'lastName' => 'required|string|max:255',
-                'dateBirth' => 'required|date',
-                'maritalStatus' => 'required|string|max:255',
-                'locality' => 'required|string|max:255',
-                'career' => 'required|string|max:255',
-                'hobby' => 'required|string|max:255',
-            ]);
+            $validated = $request->validated();
 
             //Создание аккаунта
             $account = Account::query()->create([

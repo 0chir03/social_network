@@ -4,11 +4,10 @@ namespace App\Http\Controllers;
 
 require_once __DIR__ . '/../../../vendor/autoload.php';
 
-use App\Events\MessageEvent;
+use App\Http\Requests\MessageRequest;
 use App\Models\Message;
 use App\Models\MessageFile;
 use App\Models\User;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use PhpAmqpLib\Connection\AMQPStreamConnection;
 use PhpAmqpLib\Message\AMQPMessage;
@@ -55,12 +54,9 @@ class MessageController
     }
 
     //Отправка сообщений
-    public function send(Request $request, User $user)
+    public function send(MessageRequest $request, User $user)
     {
-        $validated = $request->validate([
-            'content' => 'required|string|max:1000',
-            'file' => 'sometimes|file|max:20000'
-        ]);
+        $validated = $request->validated();
 
         //текстовое сообщение
         $message = Message::query()->create([

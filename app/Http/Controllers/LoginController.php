@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\LoginRequest;
 use App\Models\Account;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -16,14 +17,10 @@ class LoginController
 
 
     //Обработка входа
-    public function login(Request $request)
+    public function login(LoginRequest $request)
     {
         //Валидация данных
-        $credentials = $request->validate([
-            'email' => 'required|email',
-            'password' => 'required|string',
-        ]);
-
+        $credentials = $request->validated();
 
         //Попытка аутентификации
         if (Auth::attempt(['email' => $credentials['email'], 'password' => $credentials['password']])) {

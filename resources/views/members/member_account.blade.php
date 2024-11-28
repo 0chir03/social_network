@@ -36,7 +36,13 @@
             <p>Хобби: {{$account->hobby}}</p>
         </div>
         <a href="{{route('members')}}">Участники сообщества</a><br><br>
-        <a href="{{route('friends_member', $account)}}">Друзья</a>
+        <a href="{{route('friends_member', $account)}}">Друзья</a><br><br>
+        <p  style="margin-left: 5px; float:left" >
+        <form  action="{{route('report', $account)}}" method="GET">
+            @csrf
+            <button>Пожаловаться</button>
+        </form>
+        </p>
     </div>
 </div>
 </div>

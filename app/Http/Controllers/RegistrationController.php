@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\RegistrationRequest;
 use App\Models\User;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
 class RegistrationController
@@ -15,15 +15,10 @@ class RegistrationController
     }
 
     //Обработка регистрации
-    public function register(Request $request)
+    public function register(RegistrationRequest $request)
     {
         //Валидация данных
-        $validated = $request->validate([
-           'name' => 'required|string|max:255',
-           'email' => 'required|string|email|max:255|unique:users',
-           'password' => 'required|string|min:8|confirmed',
-           'phone' => 'nullable|string|max:15',
-        ]);
+        $validated = $request->validated();
 
         //Создаем пользователя
         $user = User::query()->create([

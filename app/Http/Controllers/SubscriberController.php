@@ -61,7 +61,7 @@ class SubscriberController
             'accepted' => 'true',
             ]);
 
-        return view ('success');
+        return redirect('/subscribers')->with('status', 'Пользователь добавлен в друзья');
     }
 
 }

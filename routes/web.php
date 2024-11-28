@@ -6,6 +6,7 @@ use App\Http\Controllers\MemberController;
 use App\Http\Controllers\MessageController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\PostsController;
+use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SubscriberController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RegistrationController;
@@ -32,6 +33,8 @@ Route::get('/subscribers', [SubscriberController::class, 'showSubscribers'])->na
 Route::post('/subscribers', [SubscriberController::class, 'accept'])->middleware('auth');
 Route::post('/subscribers/{user}/send', [MessageController::class, 'send'])->name('send')->middleware('auth');
 Route::post('/posts', [PostsController::class, 'createPosts'])->name('posts')->middleware('auth');
+Route::get('/members/{account}/report', [ReportController::class, 'getForm'])->name('report')->middleware('auth');
+Route::post('/members/{account}/report', [ReportController::class, 'create'])->middleware('auth');
 
 Route::middleware(['auth'])->group(function () {
     Route::get('/image', [MediaController::class, 'image'])->name('image');
@@ -48,10 +51,6 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/messages/{user}', [MessageController::class, 'send'])->name('messages.store');
     Route::get('/messages/unread/count', [MessageController::class, 'getUnreadCount'])->name('messages.unread.count');
 });
-
-/*Route::get('/sendbasicemail',[MailController::class, 'basic_email'])->name('sendbasicemail');
-Route::get('/sendhtmlemail',[MailController::class, 'html_email'])->name('sendhtmlemail');
-Route::get('/sendattachmentemail',[MailController::class, 'attachment_email'])->name('sendattachmentemail');*/
 
 
 Route::get('/', function () {
