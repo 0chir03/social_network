@@ -4,8 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\ReportRequest;
 use App\Models\Account;
-use Illuminate\Support\Facades\Http;
-
+use App\Service\RabbitMQService;
 class ReportController
 {
     public function getForm(Account $account)
@@ -13,19 +12,19 @@ class ReportController
         return view('report.report')->with('account', $account);
     }
 
-
     public function create(ReportRequest $request, Account $account)
     {
         $validated = $request->validated();
+        $queue = 'yougile';
 
-        Http::withToken('6WxXQlOvkRnkPZyB15XEW3PdSHIp2sOmfPPA2lNoLJ3ZOLXcL2eQCRB+JOgK1lNA')
-            ->post('https://ru.yougile.com/api-v2/tasks', [
-                'title' => $account->first_name . ' ' . $account->last_name,
-                'columnId' => '190ff3c1-7098-40d9-a046-3080a20fce07',
-                'description' => $validated['content'],
-                'color' => 'task-red'
-            ]);
+        $data = json_encode([
+            'account' => $account,
+            'validated' => $validated,
+        ]);
 
-        return redirect('/members/23/profile')->with('info', 'Жалоба отправлена');
+        $service = new RabbitMQService;
+        $service->produce($queue, $data);
+
+        return back()->with('status',  "Жалоба направлена на рассмотрение");
     }
 }

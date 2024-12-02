@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="styles.css">
@@ -39,10 +40,10 @@
                              {{$account->first_name . ' ' . $account->last_name}} <br/>
                                   {{$account->locality}}<br/>
                                       <div class="item" style="display: inline-block">
-                                           <form action="{{route('members')}}" method="POST">
-                                          @csrf
-                                          <input hidden="id" name="id" value= {{$account->id}} required>
-                                       <button>Добавить</button>
+                                           <form method="POST" class="addMember">
+                                            @csrf
+                                          <input type="hidden" id="id" name="id" value= {{$account->id}} required>
+                                       <button type="button">Добавить</button>
                                     </form>
                                  </div>
                              </div>
@@ -53,6 +54,7 @@
     </main>
 <div style="text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); position: fixed; bottom: 0; right: 0; z-index:500;"> {{$date = date('d.m.Y')}}</div>
 </body>
+
 <style>
     body {
 
@@ -170,3 +172,52 @@
     }
 
 </style>
+
+<script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+<script>
+    $("document").ready(function() {
+        $('.addMember').on('click', function() {
+
+            var form = $(this);
+            var memberId = form.find('#id').val();
+
+            $.ajax({
+                type: "POST",
+                url: "/members",
+                data: { 'id': memberId,
+                    '_token': $('meta[name="csrf-token"]').attr('content')
+                },
+                success: function(data) {
+                    if (data === "Вы уже подписаны")
+                        alert("Вы уже подписаны");
+                    else if (data === "Запрос на дружбу отправлен")
+                        var messageDiv = $('<div>', {
+                            text: 'Запрос отправлен',
+                            class: 'success-message',
+                            css: {
+                                position: 'fixed',
+                                top: '20px',
+                                left: '50%',
+                                transform: 'translateX(-50%)',
+                                backgroundColor: 'green',
+                                color: 'white',
+                                padding: '10px 20px',
+                                borderRadius: '5px',
+                                zIndex: '1000'
+                            }
+                        });
+                    // Добавляем сообщение на страницу
+                    $('body').append(messageDiv);
+                    // Удаляем сообщение через 3 секунды
+                    setTimeout(function() {
+                        messageDiv.fadeOut(300, function() {
+                            $(this).remove();
+                        });
+                    }, 3000);
+                }
+            });
+        });
+
+    });
+</script>
+

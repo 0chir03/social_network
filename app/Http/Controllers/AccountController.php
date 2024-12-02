@@ -36,7 +36,7 @@ class AccountController
 
             //Создание фото для аккаунта
             $account_id = $account->id;
-            $photo = Photo::query()->create([
+            Photo::query()->create([
                 'account_id' => $account_id,
                 'photo_link' => $request->file('file')->store('', 'images'),
             ]);

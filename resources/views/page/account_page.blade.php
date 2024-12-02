@@ -35,7 +35,12 @@
                 <a href="{{route('image')}}">Фотографии</a><br><br>
                 <a href="{{route('music')}}">Аудиозаписи</a><br><br>
                 <a href="{{route('video')}}">Видео</a><br><br>
-
+                <p  style="margin-left: 5px; float:left" >
+                <form  action="{{route('problems')}}" method="GET">
+                    @csrf
+                    <button>Технические проблемы</button>
+                </form>
+                </p>
             </div>
          </div>
         <div class="message">

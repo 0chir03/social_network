@@ -8,6 +8,7 @@ use App\Http\Requests\MessageRequest;
 use App\Models\Message;
 use App\Models\MessageFile;
 use App\Models\User;
+use App\Service\RabbitMQService;
 use Illuminate\Support\Facades\Auth;
 use PhpAmqpLib\Connection\AMQPStreamConnection;
 use PhpAmqpLib\Message\AMQPMessage;
@@ -57,6 +58,7 @@ class MessageController
     public function send(MessageRequest $request, User $user)
     {
         $validated = $request->validated();
+        $queue = 'hello';
 
         //текстовое сообщение
         $message = Message::query()->create([
@@ -73,13 +75,8 @@ class MessageController
             ]);
         }
 
-        $connection = new AMQPStreamConnection('rabbitmq', 5672, 'rmuser', 'rmpassword');
-        $channel = $connection->channel();
-
-        $channel->queue_declare('hello', false, false, false, false);
-
-        $msg = new AMQPMessage($message);
-        $channel->basic_publish($msg, '', 'hello');
+        $service = new RabbitMQService();
+        $service->produce($queue, $message);
 
         return back()->with('status', 'Сообщение отправлено');
     }

@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="styles.css">
@@ -68,10 +69,10 @@
                                                     </div>
                                                         {{$item->first_name . ' ' . $item->last_name}}<br/>
                                                         {{$item->locality}}<br/>
-                                                        <form action="{{route('subscribers')}}" method="POST">
+                                                        <form method="POST" class="acceptRequest">
                                                     @csrf
-                                                <input hidden="user_id" name="user_id" value="{{$item->user_id}}" required>
-                                            <div class="item" ><button>Принять запрос в друзья</button></div>
+                                                <input type="hidden" id="user_id" name="user_id" value="{{$item->user_id}}" required>
+                                            <button type="button">Принять запрос</button>
                                         </form>
                                     </div>
                                 </div>
@@ -81,7 +82,8 @@
                  @endif
             </div>
 </main>
-<div style="text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); position: fixed; bottom: 0; right: 0; z-index:500;"> {{$date = date('d.m.Y')}}</div>
+    <footer> {{$subscribers->links()}} </footer>
+    <div style="text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); position: fixed; bottom: 0; right: 0; z-index:500;"> {{$date = date('d.m.Y')}}</div>
 </body>
 <style>
     body {
@@ -210,3 +212,51 @@
     }
 
 </style>
+
+<script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+<script>
+    $("document").ready(function() {
+        $('.acceptRequest button').on('click', function() {
+
+            var form = $(this).closest('.acceptRequest');
+            var userId = form.find('#user_id').val();
+
+            $.ajax({
+                type: "POST",
+                url: "/subscribers",
+                data: { 'user_id': userId,
+                    '_token': $('meta[name="csrf-token"]').attr('content')
+                },
+                success: function(data) {
+                    if (data === 'Успешно')
+                        var messageDiv = $('<div>', {
+                            text: 'Запрос принят',
+                            class: 'success-message',
+                            css: {
+                                position: 'fixed',
+                                top: '20px',
+                                left: '50%',
+                                transform: 'translateX(-50%)',
+                                backgroundColor: 'green',
+                                color: 'white',
+                                padding: '10px 20px',
+                                borderRadius: '5px',
+                                zIndex: '1000'
+                            }
+                        });
+                    // Добавляем сообщение на страницу
+                    $('body').append(messageDiv);
+                    // Удаляем сообщение через 3 секунды
+                    setTimeout(function() {
+                        messageDiv.fadeOut(300, function() {
+                            $(this).remove();
+                        });
+                    }, 3000);
+                    //блокировка кнопки после принятия запроса
+                    form.find('button').prop('disabled', true);
+                }
+            });
+        });
+
+    });
+</script>

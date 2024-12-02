@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\MemberRequest;
 use App\Models\Account;
 use App\Models\User;
 use App\Models\Subscriber;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 class MemberController
 {
@@ -36,19 +36,17 @@ class MemberController
     }
 
     //Добавить в друзья
-    public function addMembers(Request $request)
+    public function addMembers(MemberRequest $request)
     {
         //Валидация
-        $validated = $request->validate([
-            'id' => 'required|integer',
-        ]);
+        $validated = $request->validated();
 
         $userId = Auth::id();
         $accountId = $validated['id'];
 
         //проверка на наличие подписчика
         if (Subscriber::query()->where('user_id', $userId)->where('account_id', $accountId)->exists()) {
-            return back()->with('status', "Вы уже подписаны");
+            return "Вы уже подписаны";
         }
 
         //добавить в друзья
@@ -58,6 +56,6 @@ class MemberController
             'accepted' => 'false',
         ]);
 
-        return back()->with('status', "Запрос на дружбу отправлен");
+        return "Запрос на дружбу отправлен";
     }
 }

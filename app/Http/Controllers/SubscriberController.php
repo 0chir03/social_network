@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\SubscriberRequest;
 use App\Models\Account;
 use App\Models\Subscriber;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class SubscriberController
 {
@@ -15,7 +16,7 @@ class SubscriberController
     public function showSubscribers()
     {
         //друзья пользователя
-        $subscribers = Subscriber::query()->where('user_id', Auth::id())->get();
+        $subscribers = Subscriber::query()->where('user_id', Auth::id())->paginate(5);
 
         //на кого подписан (по account_id авторизованного пользователя)
         $requests = Subscriber::query()->where('account_id', Auth::user()->account->id)->get();
@@ -41,27 +42,33 @@ class SubscriberController
     }
 
     //потверждение заявки в друзья
-    public function accept(Request $request)
+    public function accept(SubscriberRequest $request)
     {
-        //Валидация
-        $validated = $request->validate([
-            'user_id' => 'required|integer',
-        ]);
+        DB::beginTransaction();
+        try {
 
-        //account_id заявителя по его user_id
-        $idAccount = Account::query()->where('user_id', '=', $validated['user_id'])->select('id')->get();
+            //Валидация
+            $validated = $request->validated();
 
-        //изменение столбца subscribers.accepted на true (потверждение в друзья, результат виден заявителю)
-        Subscriber::query()->where('user_id', $validated['user_id'])->update(['accepted' => true]);
+            //account_id заявителя по его user_id
+            $idAccount = Account::query()->where('user_id', '=', $validated['user_id'])->first()->id;;
 
-        //добавление подписчика к себе (результат виден пользователю)
-        Subscriber::query()->create([
-            'user_id' => Auth::id(),
-            'account_id' => $idAccount[0]->id,
-            'accepted' => 'true',
-            ]);
+            //изменение столбца subscribers.accepted на true (потверждение в друзья, результат виден заявителю)
+            Subscriber::query()->where('user_id', $validated['user_id'])->update(['accepted' => true]);
 
-        return redirect('/subscribers')->with('status', 'Пользователь добавлен в друзья');
+            //добавление подписчика к себе (результат виден пользователю)
+            Subscriber::query()->create([
+                'user_id' => Auth::id(),
+                'account_id' => $idAccount,
+                'accepted' => 'true',
+                ]);
+
+            DB::commit();
+            return 'Успешно';
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json('Ошибка: ' . $e->getMessage(), 500);
+        }
     }
 
 }

@@ -6,6 +6,7 @@ use App\Http\Controllers\MemberController;
 use App\Http\Controllers\MessageController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\PostsController;
+use App\Http\Controllers\ProblemController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SubscriberController;
 use Illuminate\Support\Facades\Route;
@@ -35,6 +36,8 @@ Route::post('/subscribers/{user}/send', [MessageController::class, 'send'])->nam
 Route::post('/posts', [PostsController::class, 'createPosts'])->name('posts')->middleware('auth');
 Route::get('/members/{account}/report', [ReportController::class, 'getForm'])->name('report')->middleware('auth');
 Route::post('/members/{account}/report', [ReportController::class, 'create'])->middleware('auth');
+Route::get('/problems', [ProblemController::class, 'getForm'])->name('problems')->middleware('auth');
+Route::post('/problems', [ProblemController::class, 'create'])->middleware('auth');
 
 Route::middleware(['auth'])->group(function () {
     Route::get('/image', [MediaController::class, 'image'])->name('image');

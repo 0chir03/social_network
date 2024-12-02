@@ -4,7 +4,7 @@
     <div class="container">
         <div class="row">
             <div class="col-md-12">
-                <h2 style="text-align: center">Жалоба на {{$account->first_name . ' ' . $account->last_name}}</h2>
+                <h2 style="text-align: center">Опишите вашу проблему</h2>
                 <div class="messages-container">
                     @if (session('status'))
                         <div class="alert alert-success">
@@ -12,7 +12,7 @@
                         </div>
                     @endif
                 </div>
-                <form action="{{route('report', $account)}}" enctype="multipart/form-data" method="POST" class="mt-3">
+                <form action="{{route('problems')}}" enctype="multipart/form-data" method="POST" class="mt-3">
                     @csrf
                     <div class="form-group">
                     <textarea name="content" class="form-control" style="width: 100%" rows="3"
@@ -43,4 +43,5 @@
         }
 
 @endsection
+
 
