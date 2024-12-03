@@ -8,3 +8,5 @@ exit
  rabbitmqctl list_queues
 exit
 exit
+rabbitmqadmin delete queue name=yougileProb vhost=/
+exit

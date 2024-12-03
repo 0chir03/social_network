@@ -35,7 +35,9 @@ class MailConsumeCommand extends Command
             echo "Сообщение доставлено";
         };
 
+        $queue = 'hello';
+
         $service = new RabbitMQService();
-        $service->consumeMail($callback);
+        $service->consume($queue, $callback);
     }
 }

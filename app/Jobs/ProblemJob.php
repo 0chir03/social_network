@@ -1,19 +1,22 @@
 <?php
 
-namespace App\Console\Commands;
+namespace App\Jobs;
 
 use App\Service\RabbitMQService;
 use App\Service\YougileService;
-use Illuminate\Console\Command;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Foundation\Queue\Queueable;
 
-
-class ProblemConsumeCommand extends Command
+class ProblemJob implements ShouldQueue
 {
-    protected $signature = 'app:problem-consume-command';
-    protected $description = 'Command description';
+    use Queueable;
+    private $data;
+    public function __construct($data)
+    {
+        $this->data = $data;
+    }
 
-
-    public function handle()
+    public function handle(): void
     {
         $callback = function ($msg) {
 
@@ -22,7 +25,6 @@ class ProblemConsumeCommand extends Command
             $yougileService->send($msg, $columnId);
 
         };
-
         $queue = 'yougileProb';
         $service = new RabbitMQService;
         $service->consume($queue, $callback);

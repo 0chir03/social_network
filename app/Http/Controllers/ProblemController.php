@@ -19,7 +19,7 @@ class ProblemController
     public function create(ProblemRequest $request)
     {
         $validated = $request->validated();
-        $queue = 'yougile';
+        $queue = 'yougileProb';
 
         $data = json_encode([
             'account' => Account::query()->where('user_id', '=', Auth::id())->firstOrFail(),

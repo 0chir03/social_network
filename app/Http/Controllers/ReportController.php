@@ -15,7 +15,7 @@ class ReportController
     public function create(ReportRequest $request, Account $account)
     {
         $validated = $request->validated();
-        $queue = 'yougile';
+        $queue = 'yougileRep';
 
         $data = json_encode([
             'account' => $account,
