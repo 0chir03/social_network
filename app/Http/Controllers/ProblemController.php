@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ProblemRequest;
+use App\Jobs\ProblemJob;
 use App\Models\Account;
 use App\Service\RabbitMQService;
 use Illuminate\Support\Facades\Auth;
@@ -21,13 +22,15 @@ class ProblemController
         $validated = $request->validated();
         $queue = 'yougileProb';
 
-        $data = json_encode([
+        $data = ([
             'account' => Account::query()->where('user_id', '=', Auth::id())->firstOrFail(),
             'validated' => $validated
         ]);
 
-        $service = new RabbitMQService;
-        $service->produce($queue, $data);
+        //$service = new RabbitMQService;
+        //$service->produce($queue, $data);
+
+        ProblemJob::dispatch($data)->onQueue($queue);
 
         return back()->with('status',  "Проблема направлена на рассмотрение");
     }
