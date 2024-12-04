@@ -22,3 +22,4 @@ tailwind.config.js
 tests/
 vendor/
 vite.config.js
+rabbitmq/
