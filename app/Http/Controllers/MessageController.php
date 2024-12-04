@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 require_once __DIR__ . '/../../../vendor/autoload.php';
 
 use App\Http\Requests\MessageRequest;
+use App\Jobs\MailJob;
 use App\Models\Message;
 use App\Models\MessageFile;
 use App\Models\User;
@@ -58,7 +59,7 @@ class MessageController
     public function send(MessageRequest $request, User $user)
     {
         $validated = $request->validated();
-        $queue = 'hello';
+        $queue = 'mail';
 
         //текстовое сообщение
         $message = Message::query()->create([
@@ -75,8 +76,10 @@ class MessageController
             ]);
         }
 
-        $service = new RabbitMQService();
-        $service->produce($queue, $message);
+       /* $service = new RabbitMQService();
+        $service->produce($queue, $message);*/
+
+        MailJob::dispatch($message)->onQueue($queue);
 
         return back()->with('status', 'Сообщение отправлено');
     }

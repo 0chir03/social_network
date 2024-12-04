@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ReportRequest;
+use App\Jobs\YougileJob;
 use App\Models\Account;
-use App\Service\RabbitMQService;
 class ReportController
 {
     public function getForm(Account $account)
@@ -16,14 +16,9 @@ class ReportController
     {
         $validated = $request->validated();
         $queue = 'yougileRep';
+        $columnId = '190ff3c1-7098-40d9-a046-3080a20fce07';
 
-        $data = json_encode([
-            'account' => $account,
-            'validated' => $validated,
-        ]);
-
-        $service = new RabbitMQService;
-        $service->produce($queue, $data);
+        YougileJob::dispatch($validated, $account, $columnId)->onQueue($queue);
 
         return back()->with('status',  "Жалоба направлена на рассмотрение");
     }
