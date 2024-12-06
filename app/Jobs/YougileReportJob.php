@@ -12,16 +12,17 @@ class YougileReportJob implements ShouldQueue
     private array $validated;
     private object $account;
     private object $user;
+    private YougileService $yougile;
     public function __construct($validated, $account, $user)
     {
         $this->validated = $validated;
         $this->account = $account;
         $this->user = $user;
+        $this->yougile = new YougileService();
     }
 
     public function handle(): void
     {
-        $yougile = new YougileService();
-        $yougile->createReport($this->validated, $this->account, $this->user);
+        $this->yougile->createReport($this->validated, $this->account, $this->user);
     }
 }
