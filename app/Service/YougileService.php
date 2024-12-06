@@ -6,16 +6,43 @@ use Illuminate\Support\Facades\Http;
 
 class YougileService
 {
-    public function send(object $msg, string $columnId)
+
+    private $token;
+    private $url;
+    private $columnId;
+
+    /**
+     * @param $token
+     * @param $url
+     * @param $columnId
+     */
+    public function __construct()
     {
-        $msg = json_decode($msg->body);
-        Http::withToken('6WxXQlOvkRnkPZyB15XEW3PdSHIp2sOmfPPA2lNoLJ3ZOLXcL2eQCRB+JOgK1lNA')
-            ->post('https://ru.yougile.com/api-v2/tasks', [
-                'title' => $msg->account->first_name . ' ' . $msg->account->last_name,
-                'columnId' => $columnId,
-                'description' => $msg->validated->content,
+        $this->token = config('services.yougile.token');
+        $this->url = config('services.yougile.url');
+        $this->columnId = config('services.yougile.column_id.column1');
+    }
+
+
+    public function createReport(array $validated, object $account, object $user): void
+    {
+        Http::withToken($this->token)
+            ->post(($this->url), [
+                'title' => $account->first_name . ' ' . $account->last_name,
+                'columnId' => $this->columnId,
+                'description' => $user->name . ' ' . $user->email . ': ' . $validated['content'],
                 'color' => 'task-red'
             ]);
-        echo "Сообщение доставлено";
+    }
+
+    public function createProblem(array $validated, object $account)
+    {
+        Http::withToken($this->token)
+            ->post($this->url, [
+                'title' => $account->first_name . ' ' . $account->last_name,
+                'columnId' => $this->columnId,
+                'description' => $validated['content'],
+                'color' => 'task-red'
+            ]);
     }
 }

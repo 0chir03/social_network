@@ -3,8 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ReportRequest;
-use App\Jobs\YougileJob;
+use App\Jobs\YougileReportJob;
+use App\Jobs\YougileRmReportJob;
 use App\Models\Account;
+use Illuminate\Support\Facades\Auth;
+
 class ReportController
 {
     public function getForm(Account $account)
@@ -14,12 +17,9 @@ class ReportController
 
     public function create(ReportRequest $request, Account $account)
     {
+        $user = Auth::user();
         $validated = $request->validated();
-        $queue = 'yougileRep';
-        $columnId = '190ff3c1-7098-40d9-a046-3080a20fce07';
-
-        YougileJob::dispatch($validated, $account, $columnId)->onQueue($queue);
-
+        YougileReportJob::dispatch($validated, $account, $user)->onQueue('yougileRep');
         return back()->with('status',  "Жалоба направлена на рассмотрение");
     }
 }

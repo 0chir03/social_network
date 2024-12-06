@@ -9,11 +9,8 @@ use App\Jobs\MailJob;
 use App\Models\Message;
 use App\Models\MessageFile;
 use App\Models\User;
-use App\Service\RabbitMQService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
-use PhpAmqpLib\Connection\AMQPStreamConnection;
-use PhpAmqpLib\Message\AMQPMessage;
-
 
 class MessageController
 {
@@ -47,7 +44,7 @@ class MessageController
             ->get();
 
         // Отмечаем сообщения как прочитанные
-        Message::where('sender_id', $user->id)
+        Message::query()->where('sender_id', $user->id)
             ->where('receiver_id', Auth::id())
             ->whereNull('read_at')
             ->update(['read_at' => now()]);
@@ -59,7 +56,6 @@ class MessageController
     public function send(MessageRequest $request, User $user)
     {
         $validated = $request->validated();
-        $queue = 'mail';
 
         //текстовое сообщение
         $message = Message::query()->create([
@@ -76,17 +72,14 @@ class MessageController
             ]);
         }
 
-       /* $service = new RabbitMQService();
-        $service->produce($queue, $message);*/
-
-        MailJob::dispatch($message)->onQueue($queue);
+        MailJob::dispatch($message)->onQueue('mail');
 
         return back()->with('status', 'Сообщение отправлено');
     }
 
-    public function getUnreadCount()
+    public function getUnreadCount(): JsonResponse
     {
-        $count = Message::where('receiver_id', Auth::id())
+        $count = Message::query()->where('receiver_id', Auth::id())
             ->whereNull('read_at')
             ->count();
 

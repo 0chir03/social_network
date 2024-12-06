@@ -3,7 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Service\RabbitMQService;
-use App\Service\YougileService;
+use App\Service\YougileProblemService;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Http;
 
@@ -18,7 +18,7 @@ class ReportConsumeCommand extends Command
         $callback = function ($msg) {
 
             $columnId = '190ff3c1-7098-40d9-a046-3080a20fce07';
-            $yougileService = new YougileService();
+            $yougileService = new YougileProblemService();
             $yougileService->send($msg, $columnId);
         };
 
