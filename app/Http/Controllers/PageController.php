@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Post;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 
 class PageController
 {
@@ -16,7 +17,9 @@ class PageController
         $account = $user->account;
 
         //посты пользователя
-        $posts = Post::all()->where('user_id', '=', Auth::id());
+        $posts = Cache::rememberForever('users',  function () {
+            return Post::all()->where('user_id', '=', Auth::id());
+        });
 
         return view('page.account_page', ['user' => $user, 'account' => $account, 'posts' => $posts]);
     }
