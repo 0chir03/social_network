@@ -9,17 +9,14 @@ use Illuminate\Foundation\Queue\Queueable;
 class YougileReportJob implements ShouldQueue
 {
     use Queueable;
-    private array $validated;
-    private object $account;
-    private object $user;
-    private YougileService $yougile;
-    public function __construct($validated, $account, $user)
-    {
-        $this->validated = $validated;
-        $this->account = $account;
-        $this->user = $user;
-        $this->yougile = new YougileService();
-    }
+
+    public function __construct(
+        private array $validated,
+        private object $account,
+        private object $user,
+        private YougileService $yougile
+    )
+    {}
 
     public function handle(): void
     {

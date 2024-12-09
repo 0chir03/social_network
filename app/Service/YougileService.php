@@ -9,18 +9,15 @@ class YougileService
 
     private $token;
     private $url;
-    private $columnId;
+    private $columnIdRep;
+    private $columnIdProb;
 
-    /**
-     * @param $token
-     * @param $url
-     * @param $columnId
-     */
     public function __construct()
     {
         $this->token = config('services.yougile.token');
         $this->url = config('services.yougile.url');
-        $this->columnId = config('services.yougile.column_id.column1');
+        $this->columnIdRep = config('services.yougile.column_id.column_report');
+        $this->columnIdProb = config('services.yougile.column_id.column_problem');
     }
 
 
@@ -29,7 +26,7 @@ class YougileService
         Http::withToken($this->token)
             ->post(($this->url), [
                 'title' => $account->first_name . ' ' . $account->last_name,
-                'columnId' => $this->columnId,
+                'columnId' => $this->columnIdRep,
                 'description' => $user->name . ' ' . $user->email . ': ' . $validated['content'],
                 'color' => 'task-red'
             ]);
@@ -40,7 +37,7 @@ class YougileService
         Http::withToken($this->token)
             ->post($this->url, [
                 'title' => $account->first_name . ' ' . $account->last_name,
-                'columnId' => $this->columnId,
+                'columnId' => $this->columnIdProb,
                 'description' => $validated['content'],
                 'color' => 'task-red'
             ]);

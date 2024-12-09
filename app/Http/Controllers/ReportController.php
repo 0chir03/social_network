@@ -6,6 +6,7 @@ use App\Http\Requests\ReportRequest;
 use App\Jobs\YougileReportJob;
 use App\Jobs\YougileRmReportJob;
 use App\Models\Account;
+use App\Service\YougileService;
 use Illuminate\Support\Facades\Auth;
 
 class ReportController
@@ -15,11 +16,11 @@ class ReportController
         return view('report.report')->with('account', $account);
     }
 
-    public function create(ReportRequest $request, Account $account)
+    public function create(ReportRequest $request, Account $account, YougileService $yougile)
     {
         $user = Auth::user();
         $validated = $request->validated();
-        YougileReportJob::dispatch($validated, $account, $user)->onQueue('yougileRep');
+        YougileReportJob::dispatch($validated, $account, $user, $yougile)->onQueue('yougileRep');
         return back()->with('status',  "Жалоба направлена на рассмотрение");
     }
 }
