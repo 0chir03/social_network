@@ -2,13 +2,20 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Post;
 use App\Models\User;
+use App\Service\Decorators\CachePostServiceDecorator;
+use App\Service\Decorators\PostServiceInterface;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Cache;
+;
 
 class PageController
 {
+    protected $postService;
+
+    public function __construct(PostServiceInterface $postService)
+    {
+        $this->postService = new CachePostServiceDecorator($postService);
+    }
     public function showPage()
     {
         /** @var User $user */
@@ -16,10 +23,8 @@ class PageController
         $user = Auth::user();
         $account = $user->account;
 
-        //посты пользователя
-        $posts = Cache::rememberForever('users',  function () {
-            return Post::all()->where('user_id', '=', Auth::id());
-        });
+        //посты через декоратор кэша
+        $posts = $this->postService->getPosts(Auth::id());
 
         return view('page.account_page', ['user' => $user, 'account' => $account, 'posts' => $posts]);
     }
@@ -28,5 +33,4 @@ class PageController
     {
         return redirect('/page')->with('success', 'Переход на свою страницу');
     }
-
 }
